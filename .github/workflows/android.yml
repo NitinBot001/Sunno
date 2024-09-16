@@ -26,3 +26,6 @@ jobs:
        GITHUB_TOKEN: ${{ secrets.TOKEN }}
        APP_FOLDER: app
        RELEASE_TITLE: Sunno
+    - name: Build & Publish Debug APK
+      uses: ShaunLWM/action-release-debugapk@0.0.7
+            
