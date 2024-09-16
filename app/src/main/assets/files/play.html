@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Audio Extractor with Playlist</title>
+    <style>
+        #playerControls {
+            display: none;
+            margin-top: 20px;
+        }
+    body{ text-align:center;}
+
+        #progressBar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        #progress {
+            width: 0%;
+            height: 100%;
+            background-color: #3b82f6;
+        }
+
+        #timeDisplay {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        #thumbnail {
+            width: 320px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #songTitle {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+        }
+
+        /* Styling same as before */
+        #progressBar {
+            position: relative;
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            cursor: pointer;
+        }
+
+        #progress {
+            height: 100%;
+            width: 0;
+            background-color: #4CAF50;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Player</h1>
+
+    <img id="thumbnail" src="" alt="Thumbnail">
+
+    <div id="songTitle">Song Title</div>
+
+    <div id="playerControls">
+        <button id="prevBtn" onclick="playPrevious()" disabled>Previous</button>
+        <button id="playPauseBtn" onclick="togglePlayPause()" disabled>Play</button>
+        <button id="nextBtn" onclick="playNext()" disabled>Next</button>
+        <div id="progressBar" onclick="scrub(event)">
+            <div id="progress"></div>
+        </div>
+        <div id="timeDisplay">
+            <span id="currentTime">0:00</span>
+            <span id="totalDuration">0:00</span>
+        </div>
+    </div>
+    <a href="#" id="redirect">
+        <button style="text-align:center;">Queue</button></a>
+    <audio id="audioPlayer" style="display:none;"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let isPlaying = false;
+        let currentTrackIndex = 0;
+        let playlist = [];
+
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progress');
+        const playerControls = document.getElementById('playerControls');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const totalDurationDisplay = document.getElementById('totalDuration');
+        const thumbnailImage = document.getElementById('thumbnail');
+        const songTitleElement = document.getElementById('songTitle');
+        const redir = document.getElementById('redirect');
+        
+        // Function to get videoId from URL
+        function getVideoIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('videoId');
+        }
+
+        // Function to fetch related songs and play the first one automatically
+        function fetchAndPlayRelatedSongs() {
+            const videoId = getVideoIdFromUrl();
+
+            if (!videoId) {
+                alert("No YouTube video ID found in the URL.");
+                return;
+            }
+
+            const url = `https://defensive-amy-nitinbhujwa-05ddb0a0.koyeb.app/related_songs?video_id=${videoId}`;
+
+            redir.href = `queue.html?videoId=${videoId}`;
+
+            axios.get(url)
+                .then(response => {
+                    playlist = response.data;
+                    if (playlist.length > 0) {
+                        playTrack(0);
+                        playerControls.style.display = 'block';
+                        updateControlButtons();
+                    } else {
+                        alert("No related songs found.");
+                        playerControls.style.display = 'none';  // Hide controls
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error retrieving related songs: ${error.message}`);
+                    alert("Failed to retrieve related songs.");
+                });
+        }
+
+        // Play track by index
+        function playTrack(index) {
+            if (index >= 0 && index < playlist.length) {
+                currentTrackIndex = index;
+                const videoId = playlist[currentTrackIndex].videoId;
+                const songTitle = playlist[currentTrackIndex].title;
+                const url = `https://video.genyt.net/${videoId}`;
+
+                const headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+                };
+
+                songTitleElement.textContent = songTitle;
+                thumbnailImage.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+                thumbnailImage.onerror = () => {
+                    thumbnailImage.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                };
+
+                axios.get(url, { headers })
+                    .then(response => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(response.data, 'text/html');
+                        const divs = doc.querySelectorAll('div.col-xl-3.col-lg-4.col-md-3.col-sm-4.col-6.mb-2');
+                        let foundLink = false;
+
+                        divs.forEach(div => {
+                            const linkTag = div.querySelector('a[download]');
+                            const downloadAttr = linkTag ? linkTag.getAttribute('download') : null;
+                            if (downloadAttr && (downloadAttr.endsWith('m4a') || downloadAttr.endsWith('mp3'))) {
+                                const href = linkTag.getAttribute('href');
+                                if (href) {
+                                    foundLink = true;
+                                    playAudio(href);
+                                }
+                            }
+                        });
+
+                        if (!foundLink) {
+                            alert("No M4A or MP3 format URLs found.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error retrieving the page: ${error.message}`);
+                        alert("Failed to retrieve the audio URL.");
+                    });
+            }
+        }
+
+        // Play the audio using the extracted URL
+        function playAudio(url) {
+            audioPlayer.src = url;
+            audioPlayer.play();
+            isPlaying = true;
+            updatePlayPauseBtn();
+            playerControls.style.display = 'block';
+
+            audioPlayer.onloadeddata = () => {
+                playPauseBtn.disabled = false;
+                nextBtn.disabled = currentTrackIndex >= playlist.length - 1;
+                prevBtn.disabled = currentTrackIndex <= 0;
+                updateTimeDisplays();
+            };
+
+            audioPlayer.ontimeupdate = updateProgress;
+            audioPlayer.onended = playNext;
+            audioPlayer.onerror = () => {
+                alert("Failed to load the audio. Skipping to the next track.");
+                playNext();
+            };
+        }
+
+        function playNext() {
+            if (currentTrackIndex < playlist.length - 1) {
+                playTrack(currentTrackIndex + 1);
+            }
+        }
+
+        function playPrevious() {
+            if (currentTrackIndex > 0) {
+                playTrack(currentTrackIndex - 1);
+            }
+        }
+
+        function togglePlayPause() {
+            if (isPlaying) {
+                audioPlayer.pause();
+                isPlaying = false;
+            } else {
+                audioPlayer.play();
+                isPlaying = true;
+            }
+            updatePlayPauseBtn();
+        }
+
+        function updatePlayPauseBtn() {
+            playPauseBtn.textContent = isPlaying ? 'Pause' : 'Play';
+        }
+
+        function updateProgress() {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressBar.style.width = `${progress}%`;
+            updateTimeDisplays();
+        }
+
+        function scrub(event) {
+            const scrubTime = (event.offsetX / progressBar.parentElement.offsetWidth) * audioPlayer.duration;
+            audioPlayer.currentTime = scrubTime;
+        }
+
+        function updateTimeDisplays() {
+            const currentTime = Math.floor(audioPlayer.currentTime);
+            const totalDuration = Math.floor(audioPlayer.duration);
+
+            currentTimeDisplay.textContent = formatTime(currentTime);
+            totalDurationDisplay.textContent = formatTime(totalDuration);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function updateControlButtons() {
+            nextBtn.disabled = currentTrackIndex >= playlist.length - 1;
+            prevBtn.disabled = currentTrackIndex <= 0;
+            playPauseBtn.disabled = playlist.length === 0;
+        }
+
+        // Function to handle keyboard controls
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            switch (key) {
+                case ' ':
+                    togglePlayPause(); // Play/Pause with space
+                    event.preventDefault(); // Prevent default space action
+                    break;
+                case 'ArrowRight':
+                    playNext(); // Next track with right arrow
+                    break;
+                case 'ArrowLeft':
+                    playPrevious(); // Previous track with left arrow
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        fetchAndPlayRelatedSongs();
+    </script>
+</body>
+
+</html>
+
