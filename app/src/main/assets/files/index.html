@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunno</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h2 class="sunno-h1"><img class="main-img" src="logo.png"></h2>
+        <!-- <p class="sunno-h1">...Bas Sunta Jaa...</p> -->
+        <!-- Search Icon -->
+        <div id="search-icon"><img class="searchioc" src="search-icon.png" alt="search-icon"></div>
+
+    </header>
+    <main>
+        <div class="song-container" id="song-container">
+            <!-- Songs will be dynamically loaded here -->
+        </div>
+    </main>
+
+    <!-- Sticky Music Control Panel -->
+    <div id="music-control-panel" class="music-control-panel">
+        <img id="control-thumbnail" src="" alt="Song Thumbnail" class="control-thumbnail">
+        <div class="control-song-info">
+            <p id="control-song-title" class="control-title">Song Title</p>
+        </div>
+        <div class="control-buttons">
+            <button id="control-play-btn"><img class="div-button" src="play-button.png"></button>
+            <button id="control-next-btn"><img class="div-button" src="next-button.png"></button>
+        </div>
+    </div>
+
+
+    <!-- Full-Screen Popup -->
+    <div id="search-popup" style="display: none;">
+        <div class="search-header">
+            <input id="search-input" type="text" placeholder="Search for songs..." />
+            <button id="search-close-btn">Close</button>
+        </div>
+        <div id="search-results-container"></div>
+    </div>
+
+    <!-- Player Popup Modal -->
+    <div id="player-modal" class="modal">
+        <div class="modal-content">
+            <span class="back-button" id="back-btn">&larr; Back</span>
+            <img id="player-thumbnail" class="player-thumbnail" src="" alt="Song Thumbnail">
+            <h2 id="player-title">Song Title</h2>
+            <p id="player-artists">Artists</p>
+            <audio id="audio-player"></audio>
+            <input type="range" id="progress-bar" value="0" max="100">
+            <div class="controls">
+                <button id="prev-btn"><img class="div-button" src="prev-button.png"></button>
+                <button id="play-btn"><img class="div-button" src="play-button.png"></button>
+                <button id="next-btn"><img class="div-button" src="next-button.png"></button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener('copy', function(event) {
+            event.preventDefault();
+        });
+        document.addEventListener('cut', function(event) {
+            event.preventDefault();
+        });
+    </script>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+</body>
+
+</html>

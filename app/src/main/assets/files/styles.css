@@ -1,0 +1,329 @@
+#search-popup {
+    position: fixed;
+    top: 0;
+    align-items: center;
+    text-align: center;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    flex-direction: column;
+    z-index: 15;
+}
+
+#search-icon {
+    right: 30px;
+    margin-left: 90%;
+    margin-top: 10px;
+    height: 50px;
+}
+
+.searchioc {
+    height: 40px;
+}
+
+.search-header {
+    padding: 20px;
+    width: 100%;
+    background-color: #a64dff;
+}
+
+#search-input {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+}
+
+#search-close-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #6600cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#search-results-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.search-result-card {
+    display: flex;
+    align-items: center;
+    background-color: #6600cc;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-result-card:hover {
+    background-color: #5900b3;
+}
+
+.search-result-thumbnail {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.search-result-info {
+    flex-grow: 1;
+}
+
+.search-result-title {
+    color: white;
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.search-result-artists {
+    color: #ccc;
+    margin: 0;
+    font-size: 14px;
+}
+
+
+/* Main Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    user-select: none;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE */
+}
+
+.div-button {
+    height: 20px;
+    border-radius: 20px;
+    max-height: 40;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e6ccff;
+    color: #333;
+}
+
+header {
+    background-color: #a64dff;
+    color: #fff;
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    z-index: 10;
+    margin: 0%;
+}
+
+.main-img {
+    position: absolute;
+    left: 0%;
+    height: 50px;
+    top: 7.5px;
+    margin: auto;
+}
+
+
+/**
+.sunno-h1{
+    font-size: 25px;
+    margin-top: 0px;
+    margin-left: 0px;
+}
+**/
+
+main {
+    padding: 20px;
+    background-color: #e6ccff;
+}
+
+.song-container {
+    display: grid;
+    margin-top: 50px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.song-card {
+    background-color: #6600cc;
+    border-radius: 8px;
+    overflow: hidden;
+    color: white;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.song-card:hover {
+    transform: translateY(-5px);
+}
+
+.song-thumbnail-wrapper {
+    width: 100%;
+    position: relative;
+    padding-bottom: 56.25%;
+    /* Aspect ratio 16:9 */
+}
+
+.song-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.song-details {
+    padding: 10px;
+}
+
+.song-title {
+    font-size: 1.2rem;
+    color: #ffffff;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.song-views {
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.song-artists {
+    font-size: 0.8rem;
+    color: #ffffff;
+}
+
+
+/* Sticky Music Control Panel */
+
+.music-control-panel {
+    position: fixed;
+    z-index: 20;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #8830df;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    display: none;
+    /* Hidden initially */
+}
+
+.control-thumbnail {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    margin-right: 10px;
+}
+
+.control-song-info {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.control-title {
+    font-size: 1rem;
+    color: #ffffff;
+    font-weight: bold;
+    color: white;
+}
+
+.control-button {
+    height: 25px;
+    max-height: 45px;
+    border-radius: 50%;
+    border-radius: 20px;
+}
+
+.control-buttons button {
+    padding: 10px;
+    color: white;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+}
+
+
+/* Player Modal Styles */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    left: 0;
+    border-radius: 0px;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #e6ccff;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+}
+
+.player-thumbnail {
+    width: 90%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.controls button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 60%;
+    cursor: pointer;
+}
+
+#progress-bar {
+    width: 90%;
+    margin: 20px 0;
+}
