@@ -10,7 +10,7 @@ Discover and stream an extensive catalog of songs from various genres and artist
 🎧 **Seamless Audio Playback**  
 Experience buffer-free streaming with optimized audio quality. Your favorite tracks load instantly for an uninterrupted listening experience.
 
-📜 **Synchronized Lyrics (Coming Soon!)**  
+📜 **Synchronized Lyrics**  
 Sing along to your favorite songs with synchronized lyrics in real-time, enhancing your connection to the music.
 
 🎶 **Curated Playlists**  
